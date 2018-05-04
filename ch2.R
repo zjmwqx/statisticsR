@@ -85,3 +85,50 @@ model <- function(x, m1, m2)
 }
 multiroot(f=model, start=c(0, 10), m1=m1, m2=m2)
 
+#MLE
+library(MASS)
+attach(geyser)
+hist(waiting)
+
+ll<-function(para)
+{
+  f1=dnorm(waiting, para[2], para[3])
+  f2=dnorm(waiting, para[4], para[5])
+  f = para[1] * f1 + (1-para[1])* f2
+  ll = sum(log(f))
+  return (-ll)
+}
+geyser.est = nlminb(c(0.5, 50,
+                      10, 80, 10), ll,
+                    lower=c(0.0001, -Inf, 0.0001, -Inf,
+                            0.0001), upper = c(0.9999, Inf, Inf, Inf, Inf))
+options(digits=3)
+geyser.est$par
+p<-geyser.est$par[1]
+mu1<-geyser.est$par[2]
+sigma1<-geyser.est$par[3]
+mu2<-geyser.est$par[4]
+sigma2<-geyser.est$par[5]
+
+x<-seq(40, 120)
+f<-p*dnorm(x, mu1, sigma1) + (1 - p) * dnorm(x, mu2, sigma2)
+hist(waiting, freq=F)
+lines(x, f)
+
+num<-c(rep(0:5, c(1532, 581, 179, 41, 10, 4)))
+install.packages("maxLik")
+logLik<-function(para)
+{
+  f=dnbinom(num,para[1],1/(1 + para[2]))
+  ll=sum(log(f))
+  return(ll)
+}
+library(maxLik)
+para <- maxLik(logLik, start = c(0.5, 0.4))$estimate
+r <- para[1];
+beta<-para[2];
+l <-  length(num)
+nbinomnum <-  dnbinom(0:5, r, 1/(1 + beta))* l
+plot(0:5, nbinomnum, ylim=c(0, 1600))
+points(0:5, c(1532, 581, 179, 41, 10, 4), type = 'p', col=2)
+legend(3, 1000, legend=c("num", "poisson"), col=1:2, lty=1)

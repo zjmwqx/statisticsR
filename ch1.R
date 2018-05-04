@@ -25,6 +25,7 @@ par(cex.axis = .75, font.axis=3)
 plot(dose, drugA, type = 'b', pch=19, lty=2, col="red")
 plot(dose, drugB, type = 'b', pch=23, lty=6, col="blue", bg="green")
 par(opar)
+#pin:画的宽，高
 
 library(Hmisc)
 x<-c(1:10)
@@ -216,4 +217,4 @@ names(data) <-paste(c("id", "name", "date", "quality",
 hist(data$quality, breaks = 12, col = "red", main="product-quality",
      xlab = "quality", cex.axis=0.7)
 
-plot(data$quality, pch=16,col="blue")
+plot(data$quality, pch=16,col="blue", main="quality plot", ylab="quality")
